@@ -5,7 +5,7 @@ nextflow.enable.dsl = 2
 process CRAM2BAM {
     input:
     tuple val(sample_id), file(cram)
-    path(reference)
+    val(reference)
 
     output:
     tuple val(sample_id), path("${sample_id}.bam"), emit: bam_ch
@@ -55,7 +55,7 @@ workflow {
     cram_path_ch = manifest_ch.splitCsv(header: true, sep: ',')
             .map{ row -> tuple(row.sample_id, file(row.cram)) }
 
-    CRAM2BAM(cram_path_ch)
+    CRAM2BAM(cram_path_ch, params.reference)
 
     BAM2FASTQ(CRAM2BAM.out.bam_ch)
 
